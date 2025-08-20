@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public products: readable by anyone, no client writes
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Orders: allow create from client with minimal validation; deny read by default
+    match /orders/{orderId} {
+      allow create: if request.time < timestamp.date(2100, 1, 1) &&
+        request.resource.data.keys().hasAll(['items','total','customer','status','createdAt']) &&
+        request.resource.data.items is list &&
+        request.resource.data.total is number &&
+        request.resource.data.customer is map &&
+        request.resource.data.customer.keys().hasAny(['name','address','phone1']);
+
+      // Prevent client reads/updates/deletes by default
+      allow read, update, delete: if false;
+    }
+
+    // Default deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

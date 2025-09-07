@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import heroBg from '../assets/hero.jpg';
+import heroBg from '../assets/b41.jpg';
 
 const HeroSection = () => {
   return (
@@ -13,12 +13,12 @@ const HeroSection = () => {
         srcSet={`${heroBg} 1x, ${heroBg} 2x`}
         sizes="100vw"
         alt="Barbari Store Hero"
-        className="absolute inset-0 w-full h-full object-cover object-top md:object-center select-none pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
         decoding="async"
         loading="eager"
       />
       {/* Background Overlay (static) */}
-      <div className="absolute inset-0 bg-black/10 sm:bg-black/20 md:bg-black/40"></div>
+      <div className="absolute inset-0 bg-black/5"></div>
       
       {/* Content (no animations) */}
       <div className="relative z-10 text-center text-white px-4">

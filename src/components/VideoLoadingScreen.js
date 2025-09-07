@@ -15,11 +15,24 @@ const VideoLoadingScreen = () => {
     if (videoRef.current) {
       const video = videoRef.current;
       
-      // Force video properties
+      // Force video properties - muted for autoplay
       video.muted = true;
       video.playsInline = true;
       video.playbackRate = 1.0;
       video.currentTime = 0;
+      
+      // Force immediate play attempt
+      const forcePlay = async () => {
+        try {
+          await video.play();
+          console.log('Video force play successful');
+        } catch (error) {
+          console.log('Force play failed:', error);
+        }
+      };
+      
+      // Try to play immediately
+      setTimeout(forcePlay, 100);
       
       // Listen for video end event
       const handleVideoEnd = () => {
@@ -32,24 +45,19 @@ const VideoLoadingScreen = () => {
       // Handle video ready to play
       const handleCanPlay = () => {
         setVideoLoaded(true);
-        // Start playing after spinner is hidden
-        setTimeout(() => {
-          const playPromise = video.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.log('Video autoplay failed:', error);
-              // If video fails, redirect after 3 seconds
-              redirectTimer = setTimeout(() => {
-                navigate('/home');
-              }, 3000);
-            });
+        // Start playing immediately with sound
+        setTimeout(async () => {
+          try {
+            await video.play();
+            console.log('Video playing');
+          } catch (error) {
+            console.log('Video autoplay failed:', error);
           }
-        }, 800); // Wait for fade-in animation
+        }, 50);
       };
 
       // Handle video loaded
       const handleLoadedData = () => {
-        // Just mark as loaded, don't play yet
         setVideoLoaded(true);
       };
 
@@ -90,11 +98,15 @@ const VideoLoadingScreen = () => {
           muted
           playsInline
           preload="auto"
+          autoPlay
+          controls={false}
           onLoadedData={() => setVideoLoaded(true)}
           onError={() => {
-            console.log('Video error, redirecting...');
-            setTimeout(() => navigate('/home'), 1000);
+            console.log('Video error');
           }}
+          onLoadStart={() => console.log('Video loading started')}
+          onCanPlay={() => console.log('Video can play')}
+          onPlay={() => console.log('Video started playing')}
         >
           <source src={videoFile} type="video/mp4" />
           Your browser does not support the video tag.

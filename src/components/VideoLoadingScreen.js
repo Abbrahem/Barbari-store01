@@ -1,67 +1,87 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
 
 const VideoLoadingScreen = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
     let redirectTimer;
+
+    // Immediate fallback timer - redirect after 6 seconds regardless
+    const fallbackTimer = setTimeout(() => {
+      navigate('/home');
+    }, 6000);
 
     // Play video when component mounts
     if (videoRef.current) {
       const video = videoRef.current;
       
-      video.playbackRate = 1.0; // Ensure normal playback speed
-      video.currentTime = 0; // Start from beginning
+      // Force video properties
+      video.muted = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      video.playbackRate = 1.0;
+      video.currentTime = 0;
       
       // Listen for video end event
       const handleVideoEnd = () => {
-        // Wait 1 second after video ends, then redirect
+        clearTimeout(fallbackTimer);
         redirectTimer = setTimeout(() => {
           navigate('/home');
         }, 1000);
       };
 
-      // Handle video loading and errors
+      // Handle video ready to play
       const handleCanPlay = () => {
-        video.play().catch(error => {
-          console.log('Video autoplay failed:', error);
-          // Fallback: redirect after 5 seconds if video fails
-          redirectTimer = setTimeout(() => {
-            navigate('/home');
-          }, 5000);
-        });
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Video autoplay failed:', error);
+          });
+        }
       };
 
-      const handleError = () => {
-        console.log('Video failed to load');
-        // Redirect immediately if video fails to load
-        redirectTimer = setTimeout(() => {
-          navigate('/home');
-        }, 2000);
+      // Handle video loaded
+      const handleLoadedData = () => {
+        setVideoLoaded(true);
+        setTimeout(() => {
+          video.play().catch(console.log);
+        }, 500);
       };
 
       video.addEventListener('ended', handleVideoEnd);
       video.addEventListener('canplay', handleCanPlay);
-      video.addEventListener('error', handleError);
+      video.addEventListener('loadeddata', handleLoadedData);
       
-      // Try to load and play immediately
+      // Force load
       video.load();
+      
+      // Try to play after a short delay
+      setTimeout(() => {
+        if (video.paused) {
+          video.play().catch(console.log);
+        }
+      }, 100);
 
-      // Cleanup event listeners
+      // Cleanup
       return () => {
+        clearTimeout(fallbackTimer);
+        if (redirectTimer) clearTimeout(redirectTimer);
         if (video) {
           video.removeEventListener('ended', handleVideoEnd);
           video.removeEventListener('canplay', handleCanPlay);
-          video.removeEventListener('error', handleError);
-        }
-        if (redirectTimer) {
-          clearTimeout(redirectTimer);
+          video.removeEventListener('loadeddata', handleLoadedData);
         }
       };
     }
+
+    return () => {
+      clearTimeout(fallbackTimer);
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
   }, [navigate]);
 
   const handleEnterClick = () => {
@@ -71,18 +91,24 @@ const VideoLoadingScreen = () => {
   return (
     <div className="video-loading-screen">
       <div className="video-container">
+        {!videoLoaded && (
+          <div className="video-placeholder">
+            <div className="loading-spinner"></div>
+          </div>
+        )}
         <video
           ref={videoRef}
-          className="loading-video"
+          className={`loading-video ${videoLoaded ? 'loaded' : 'loading'}`}
           muted
-          autoPlay
           playsInline
-          preload="metadata"
-          webkit-playsinline="true"
-          x5-playsinline="true"
+          preload="auto"
+          onLoadedData={() => setVideoLoaded(true)}
+          onError={() => {
+            console.log('Video error, redirecting...');
+            setTimeout(() => navigate('/home'), 1000);
+          }}
         >
-          <source src={`${process.env.PUBLIC_URL}/vd1.mp4`} type="video/mp4" />
-          <source src="./vd1.mp4" type="video/mp4" />
+          <source src="/vd1.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         
@@ -133,6 +159,42 @@ const VideoLoadingScreen = () => {
           height: 100%;
           object-fit: contain;
           background: #000;
+          transition: opacity 0.5s ease;
+        }
+
+        .loading-video.loading {
+          opacity: 0;
+        }
+
+        .loading-video.loaded {
+          opacity: 1;
+        }
+
+        .video-placeholder {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 5;
+        }
+
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top: 3px solid white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
 
         .enter-button {

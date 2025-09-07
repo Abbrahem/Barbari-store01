@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
+import videoFile from '../assets/vd1.mp4';
 
 const VideoLoadingScreen = () => {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ const VideoLoadingScreen = () => {
             setTimeout(() => navigate('/home'), 1000);
           }}
         >
-          <source src="/vd1.mp4" type="video/mp4" />
+          <source src={videoFile} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         

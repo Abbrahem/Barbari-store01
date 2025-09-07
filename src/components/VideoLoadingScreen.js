@@ -11,8 +11,10 @@ const VideoLoadingScreen = () => {
 
     // Play video when component mounts
     if (videoRef.current) {
-      videoRef.current.playbackRate = 1.0; // Ensure normal playback speed
-      videoRef.current.currentTime = 0; // Start from beginning
+      const video = videoRef.current;
+      
+      video.playbackRate = 1.0; // Ensure normal playback speed
+      video.currentTime = 0; // Start from beginning
       
       // Listen for video end event
       const handleVideoEnd = () => {
@@ -22,16 +24,38 @@ const VideoLoadingScreen = () => {
         }, 1000);
       };
 
-      videoRef.current.addEventListener('ended', handleVideoEnd);
-      
-      videoRef.current.play().catch(error => {
-        console.log('Video autoplay failed:', error);
-      });
+      // Handle video loading and errors
+      const handleCanPlay = () => {
+        video.play().catch(error => {
+          console.log('Video autoplay failed:', error);
+          // Fallback: redirect after 5 seconds if video fails
+          redirectTimer = setTimeout(() => {
+            navigate('/home');
+          }, 5000);
+        });
+      };
 
-      // Cleanup event listener
+      const handleError = () => {
+        console.log('Video failed to load');
+        // Redirect immediately if video fails to load
+        redirectTimer = setTimeout(() => {
+          navigate('/home');
+        }, 2000);
+      };
+
+      video.addEventListener('ended', handleVideoEnd);
+      video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('error', handleError);
+      
+      // Try to load and play immediately
+      video.load();
+
+      // Cleanup event listeners
       return () => {
-        if (videoRef.current) {
-          videoRef.current.removeEventListener('ended', handleVideoEnd);
+        if (video) {
+          video.removeEventListener('ended', handleVideoEnd);
+          video.removeEventListener('canplay', handleCanPlay);
+          video.removeEventListener('error', handleError);
         }
         if (redirectTimer) {
           clearTimeout(redirectTimer);
@@ -51,11 +75,14 @@ const VideoLoadingScreen = () => {
           ref={videoRef}
           className="loading-video"
           muted
+          autoPlay
           playsInline
-          preload="auto"
-          controls={false}
+          preload="metadata"
+          webkit-playsinline="true"
+          x5-playsinline="true"
         >
-          <source src="/vd1.mp4" type="video/mp4" />
+          <source src={`${process.env.PUBLIC_URL}/vd1.mp4`} type="video/mp4" />
+          <source src="./vd1.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         

@@ -11,11 +11,6 @@ const VideoLoadingScreen = () => {
   useEffect(() => {
     let redirectTimer;
 
-    // Immediate fallback timer - redirect after 6 seconds regardless
-    const fallbackTimer = setTimeout(() => {
-      navigate('/home');
-    }, 6000);
-
     // Play video when component mounts
     if (videoRef.current) {
       const video = videoRef.current;
@@ -23,13 +18,12 @@ const VideoLoadingScreen = () => {
       // Force video properties
       video.muted = true;
       video.playsInline = true;
-      video.autoplay = true;
       video.playbackRate = 1.0;
       video.currentTime = 0;
       
       // Listen for video end event
       const handleVideoEnd = () => {
-        clearTimeout(fallbackTimer);
+        // Wait 1 second after video ends, then redirect
         redirectTimer = setTimeout(() => {
           navigate('/home');
         }, 1000);
@@ -37,20 +31,26 @@ const VideoLoadingScreen = () => {
 
       // Handle video ready to play
       const handleCanPlay = () => {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log('Video autoplay failed:', error);
-          });
-        }
+        setVideoLoaded(true);
+        // Start playing after spinner is hidden
+        setTimeout(() => {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.log('Video autoplay failed:', error);
+              // If video fails, redirect after 3 seconds
+              redirectTimer = setTimeout(() => {
+                navigate('/home');
+              }, 3000);
+            });
+          }
+        }, 800); // Wait for fade-in animation
       };
 
       // Handle video loaded
       const handleLoadedData = () => {
+        // Just mark as loaded, don't play yet
         setVideoLoaded(true);
-        setTimeout(() => {
-          video.play().catch(console.log);
-        }, 500);
       };
 
       video.addEventListener('ended', handleVideoEnd);
@@ -59,17 +59,9 @@ const VideoLoadingScreen = () => {
       
       // Force load
       video.load();
-      
-      // Try to play after a short delay
-      setTimeout(() => {
-        if (video.paused) {
-          video.play().catch(console.log);
-        }
-      }, 100);
 
       // Cleanup
       return () => {
-        clearTimeout(fallbackTimer);
         if (redirectTimer) clearTimeout(redirectTimer);
         if (video) {
           video.removeEventListener('ended', handleVideoEnd);
@@ -78,11 +70,6 @@ const VideoLoadingScreen = () => {
         }
       };
     }
-
-    return () => {
-      clearTimeout(fallbackTimer);
-      if (redirectTimer) clearTimeout(redirectTimer);
-    };
   }, [navigate]);
 
   const handleEnterClick = () => {

@@ -15,24 +15,10 @@ const VideoLoadingScreen = () => {
     if (videoRef.current) {
       const video = videoRef.current;
       
-      // Force video properties - muted for autoplay
-      video.muted = true;
+      // Simple setup
+      video.muted = false;
       video.playsInline = true;
-      video.playbackRate = 1.0;
-      video.currentTime = 0;
-      
-      // Force immediate play attempt
-      const forcePlay = async () => {
-        try {
-          await video.play();
-          console.log('Video force play successful');
-        } catch (error) {
-          console.log('Force play failed:', error);
-        }
-      };
-      
-      // Try to play immediately
-      setTimeout(forcePlay, 100);
+      video.volume = 1.0;
       
       // Listen for video end event
       const handleVideoEnd = () => {
@@ -43,17 +29,17 @@ const VideoLoadingScreen = () => {
       };
 
       // Handle video ready to play
-      const handleCanPlay = () => {
+      const handleCanPlay = async () => {
         setVideoLoaded(true);
-        // Start playing immediately with sound
-        setTimeout(async () => {
-          try {
-            await video.play();
-            console.log('Video playing');
-          } catch (error) {
-            console.log('Video autoplay failed:', error);
-          }
-        }, 50);
+        console.log('Video can play - starting muted autoplay');
+        
+        try {
+          video.muted = true;
+          await video.play();
+          console.log('Video playing muted successfully');
+        } catch (error) {
+          console.log('Video play failed:', error);
+        }
       };
 
       // Handle video loaded
@@ -100,15 +86,19 @@ const VideoLoadingScreen = () => {
           preload="auto"
           autoPlay
           controls={false}
-          onLoadedData={() => setVideoLoaded(true)}
-          onError={() => {
-            console.log('Video error');
+          onError={(e) => {
+            console.log('Video error:', e);
+            console.log('Video src:', videoFile);
           }}
           onLoadStart={() => console.log('Video loading started')}
           onCanPlay={() => console.log('Video can play')}
           onPlay={() => console.log('Video started playing')}
+          onLoadedMetadata={() => console.log('Video metadata loaded')}
+          onLoadedData={() => console.log('Video data loaded')}
         >
           <source src={videoFile} type="video/mp4" />
+          <source src={videoFile} type="video/webm" />
+          <source src={videoFile} type="video/ogg" />
           Your browser does not support the video tag.
         </video>
         
@@ -224,6 +214,7 @@ const VideoLoadingScreen = () => {
           transform: translate(-50%, -50%) scale(0.95);
         }
 
+
         .social-icons {
           position: absolute;
           bottom: 30px;
@@ -266,6 +257,7 @@ const VideoLoadingScreen = () => {
             bottom: 20px;
             gap: 15px;
           }
+
         }
 
         @media (max-width: 480px) {
@@ -286,6 +278,7 @@ const VideoLoadingScreen = () => {
             bottom: 15px;
             gap: 12px;
           }
+
         }
       `}</style>
     </div>

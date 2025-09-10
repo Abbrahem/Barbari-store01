@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { sortSizes } from '../utils/sizeUtils';
 
 const FeaturedProduct = ({ product }) => {
   if (!product) return null;
@@ -52,7 +53,7 @@ const FeaturedProduct = ({ product }) => {
                     <div>
                       <h4 className="font-semibold mb-2 text-dark">Available Sizes:</h4>
                       <div className="flex flex-wrap gap-2">
-                        {product.sizes.map((size) => (
+                        {sortSizes(product.sizes).map((size) => (
                           <span
                             key={size}
                             className="px-3 py-1 bg-gray-100 text-dark rounded-full text-sm"

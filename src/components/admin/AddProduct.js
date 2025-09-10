@@ -45,7 +45,7 @@ const AddProduct = ({ editProduct = null, onDoneEdit }) => {
   const categoryOptions = {
     't-shirt': {
       colors: ['White', 'Black', 'Gray', 'Pink', 'Red', 'Blue', 'Baby Blue', 'Beige', 'Brown'],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+      sizes: ['S', 'M', 'L', 'XS', 'XL', 'XXL']
     },
     'pants': {
       colors: ['White', 'Black', 'Light Blue', 'Dark Blue', 'Teal', 'Dark Green', 'Brown', 'Gray'],

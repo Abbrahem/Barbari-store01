@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Swal from 'sweetalert2';
+import { sortSizes } from '../utils/sizeUtils';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -153,7 +154,7 @@ const ProductDetail = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-dark">Choose Size:</h3>
                 <div className="flex flex-wrap gap-2">
-                  {(product.sizes || []).map((size) => (
+                  {sortSizes(product.sizes || []).map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}

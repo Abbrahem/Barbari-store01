@@ -4,6 +4,12 @@ const CartContext = createContext();
 
 const cartReducer = (state, action) => {
   switch (action.type) {
+    case 'SET_GOVERNORATE':
+      return {
+        ...state,
+        selectedGovernorate: action.payload
+      };
+    
     case 'ADD_TO_CART':
       const existingItem = state.items.find(
         item => item.id === action.payload.id && 
@@ -54,7 +60,8 @@ const cartReducer = (state, action) => {
     case 'CLEAR_CART':
       return {
         ...state,
-        items: []
+        items: [],
+        selectedGovernorate: null
       };
     
     default:
@@ -63,7 +70,10 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
+  const [state, dispatch] = useReducer(cartReducer, { 
+    items: [],
+    selectedGovernorate: null
+  });
 
   const addToCart = (product, size, color, quantity = 1) => {
     const placeholder = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDYwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjMwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjOUI5QjlCIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
@@ -110,15 +120,34 @@ export const CartProvider = ({ children }) => {
     return state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const setSelectedGovernorate = (governorate) => {
+    dispatch({
+      type: 'SET_GOVERNORATE',
+      payload: governorate
+    });
+  };
+
+  const getShippingCost = () => {
+    return state.selectedGovernorate ? state.selectedGovernorate.price : 0;
+  };
+
+  const getTotalWithShipping = () => {
+    return getTotalPrice() + getShippingCost();
+  };
+
   return (
     <CartContext.Provider value={{
       items: state.items,
+      selectedGovernorate: state.selectedGovernorate,
       addToCart,
       removeFromCart,
       updateQuantity,
       clearCart,
       getTotalItems,
-      getTotalPrice
+      getTotalPrice,
+      setSelectedGovernorate,
+      getShippingCost,
+      getTotalWithShipping
     }}>
       {children}
     </CartContext.Provider>

@@ -3,10 +3,19 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import GovernorateSelector from '../components/GovernorateSelector';
 
 const Cart = () => {
-  const { items, removeFromCart, updateQuantity, getTotalPrice } = useCart();
-  const deliveryFee = 120;
+  const { 
+    items, 
+    removeFromCart, 
+    updateQuantity, 
+    getTotalPrice, 
+    selectedGovernorate,
+    setSelectedGovernorate,
+    getShippingCost,
+    getTotalWithShipping
+  } = useCart();
 
   const handleQuantityChange = (productId, size, color, newQuantity) => {
     if (newQuantity <= 0) {
@@ -111,6 +120,14 @@ const Cart = () => {
             <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
               <h2 className="text-xl font-semibold mb-6 text-dark">Order Summary</h2>
               
+              {/* Governorate Selection */}
+              <div className="mb-6">
+                <GovernorateSelector 
+                  selectedGovernorate={selectedGovernorate}
+                  onGovernorateChange={setSelectedGovernorate}
+                />
+              </div>
+              
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
@@ -118,18 +135,28 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery Fee:</span>
-                  <span>{deliveryFee} EGP</span>
+                  <span>{getShippingCost()} EGP</span>
                 </div>
                 <hr className="border-gray-300" />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total:</span>
-                  <span>{getTotalPrice() + deliveryFee} EGP</span>
+                  <span>{getTotalWithShipping()} EGP</span>
                 </div>
               </div>
 
               <Link
                 to="/checkout"
-                className="block w-full bg-dark text-white text-center py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors duration-300 font-semibold mt-6"
+                className={`block w-full text-center py-3 px-6 rounded-lg transition-colors duration-300 font-semibold mt-6 ${
+                  selectedGovernorate 
+                    ? 'bg-dark text-white hover:bg-gray-800' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                onClick={(e) => {
+                  if (!selectedGovernorate) {
+                    e.preventDefault();
+                    alert('يرجى اختيار المحافظة أولاً');
+                  }
+                }}
               >
                 Proceed to Checkout
               </Link>

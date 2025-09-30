@@ -4,10 +4,19 @@ import { db } from '../firebase/config';
 import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import GovernorateSelector from '../components/GovernorateSelector';
 import Swal from 'sweetalert2';
 
 const Checkout = () => {
-  const { items, getTotalPrice, clearCart } = useCart();
+  const { 
+    items, 
+    getTotalPrice, 
+    clearCart, 
+    selectedGovernorate,
+    setSelectedGovernorate,
+    getShippingCost,
+    getTotalWithShipping
+  } = useCart();
   const [formData, setFormData] = useState({
     fullName: '',
     address: '',
@@ -15,8 +24,7 @@ const Checkout = () => {
     phone2: ''
   });
 
-  const deliveryFee = 110;
-  const totalPrice = getTotalPrice() + deliveryFee;
+  const totalPrice = getTotalWithShipping();
 
   const handleChange = (e) => {
     setFormData({
@@ -27,6 +35,17 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate governorate is selected
+    if (!selectedGovernorate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'يرجى اختيار المحافظة',
+        text: 'يجب اختيار المحافظة لحساب رسوم التوصيل',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
 
     // Validate phone numbers are different
     if (formData.phone1 === formData.phone2) {
@@ -54,6 +73,9 @@ const Checkout = () => {
       const orderData = {
         items: normalizedItems,
         total: Number(totalPrice),
+        subtotal: Number(getTotalPrice()),
+        shippingCost: Number(getShippingCost()),
+        governorate: selectedGovernorate,
         customer: {
           name: formData.fullName,
           address: formData.address,
@@ -136,19 +158,29 @@ const Checkout = () => {
                 ))}
               </div>
 
-              <div className="mt-6 space-y-2">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>{getTotalPrice()} EGP</span>
+              <div className="mt-6">
+                {/* Governorate Selection */}
+                <div className="mb-4">
+                  <GovernorateSelector 
+                    selectedGovernorate={selectedGovernorate}
+                    onGovernorateChange={setSelectedGovernorate}
+                  />
                 </div>
-                <div className="flex justify-between">
-                  <span>Delivery Fee:</span>
-                  <span>{deliveryFee} EGP</span>
-                </div>
-                <hr className="border-gray-300" />
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total:</span>
-                  <span>{totalPrice} EGP</span>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span>{getTotalPrice()} EGP</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Delivery Fee:</span>
+                    <span>{getShippingCost()} EGP</span>
+                  </div>
+                  <hr className="border-gray-300" />
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total:</span>
+                    <span>{totalPrice} EGP</span>
+                  </div>
                 </div>
               </div>
             </div>

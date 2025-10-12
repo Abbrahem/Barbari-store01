@@ -127,12 +127,81 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // Get shipping cost and message
+  const getShippingInfo = () => {
+    const totalPrice = getTotalPrice();
+    
+    // Free shipping for orders over 1500 EGP
+    if (totalPrice >= 1500) {
+      return {
+        cost: 0,
+        message: 'الشحن مجاني للطلبات فوق 1500 جنيه',
+        isFree: true
+      };
+    }
+    
+    if (!state.selectedGovernorate) return { cost: 0, message: '', isFree: false };
+    
+    const governorateName = state.selectedGovernorate.name;
+    
+    // Suez - 50 EGP
+    if (governorateName === 'السويس') {
+      return {
+        cost: 50,
+        message: 'سعر التوصيل: 50 جنيه (السويس)',
+        isFree: false
+      };
+    }
+    
+    // Delta and Northern governorates - 70 EGP
+    const deltaAndNorthGovernorates = [
+      // Delta
+      'الدقهلية', 'دمياط', 'الشرقية', 'الغربية', 'كفر الشيخ',
+      'المنوفية', 'البحيرة', 'المنصورة', 'الزقازيق', 'طنطا',
+      'شبين الكوم', 'دسوق', 'ميت غمر', 'بلبيس', 'منيا القمح',
+      'كفر الدوار', 'كفر الزيات',
+      
+      // Northern governorates
+      'القاهرة', 'الجيزة', 'القليوبية', 'الإسكندرية', 'بورسعيد', 
+      'الإسماعيلية', 'شمال سيناء', 'جنوب سيناء', 'مرسى مطروح',
+      'البحيرة', 'كفر الشيخ', 'الدقهلية', 'الشرقية', 'الغربية',
+      'المنوفية', 'دمياط', 'المنصورة', 'طنطا', 'دمنهور', 'الزقازيق',
+      'شبين الكوم', 'دسوق', 'ميت غمر', 'بلبيس', 'منيا القمح',
+      'كفر الدوار', 'كفر الزيات', 'بورفؤاد', 'المنصورة الجديدة', 
+      'العاشر من رمضان', 'العريش', 'الطور', 'رأس سدر'
+    ];
+    
+    // Check if governorate is in Delta/North (70 EGP)
+    if (deltaAndNorthGovernorates.includes(governorateName)) {
+      return {
+        cost: 70,
+        message: 'سعر التوصيل: 70 جنيه (محافظات الدلتا والشمال)',
+        isFree: false
+      };
+    }
+    
+    // All other governorates (Upper Egypt/Sa'id) - 120 EGP
+    return {
+      cost: 120,
+      message: 'سعر التوصيل: 120 جنيه (محافظات الصعيد)',
+      isFree: false
+    };
+  };
+  
   const getShippingCost = () => {
-    return state.selectedGovernorate ? state.selectedGovernorate.price : 0;
+    return getShippingInfo().cost;
   };
 
   const getTotalWithShipping = () => {
     return getTotalPrice() + getShippingCost();
+  };
+  
+  const getShippingMessage = () => {
+    return getShippingInfo().message;
+  };
+  
+  const isShippingFree = () => {
+    return getShippingInfo().isFree;
   };
 
   return (
@@ -147,7 +216,9 @@ export const CartProvider = ({ children }) => {
       getTotalPrice,
       setSelectedGovernorate,
       getShippingCost,
-      getTotalWithShipping
+      getTotalWithShipping,
+      getShippingMessage,
+      isShippingFree
     }}>
       {children}
     </CartContext.Provider>

@@ -2,38 +2,36 @@ import React from 'react';
 
 const GovernorateSelector = ({ selectedGovernorate, onGovernorateChange, className = "" }) => {
   const governorates = [
-    // السويس - 50 جنيه
-    { name: 'السويس', price: 50, region: 'suez' },
+    // وجه بحري (دلتا + شمال) - 70 جنيه
+    { name: 'القاهرة', price: 70, region: 'delta_north' },
+    { name: 'الجيزة', price: 70, region: 'delta_north' },
+    { name: 'القليوبية', price: 70, region: 'delta_north' },
+    { name: 'الإسكندرية', price: 70, region: 'delta_north' },
+    { name: 'البحيرة', price: 70, region: 'delta_north' },
+    { name: 'كفر الشيخ', price: 70, region: 'delta_north' },
+    { name: 'الدقهلية', price: 70, region: 'delta_north' },
+    { name: 'الشرقية', price: 70, region: 'delta_north' },
+    { name: 'الغربية', price: 70, region: 'delta_north' },
+    { name: 'المنوفية', price: 70, region: 'delta_north' },
+    { name: 'دمياط', price: 70, region: 'delta_north' },
+    { name: 'بورسعيد', price: 70, region: 'delta_north' },
+    { name: 'الإسماعيلية', price: 70, region: 'delta_north' },
+    { name: 'السويس', price:50,region: 'delta_north' },
+    { name: 'شمال سيناء', price: 70, region: 'delta_north' },
+    { name: 'جنوب سيناء', price: 70, region: 'delta_north' },
+    { name: 'مرسى مطروح', price: 70, region: 'delta_north' },
     
-    // وجه بحري (دلتا + شمال) - 120 جنيه
-    { name: 'القاهرة', price: 120, region: 'delta_north' },
-    { name: 'الجيزة', price: 120, region: 'delta_north' },
-    { name: 'القليوبية', price: 120, region: 'delta_north' },
-    { name: 'الإسكندرية', price: 120, region: 'delta_north' },
-    { name: 'البحيرة', price: 120, region: 'delta_north' },
-    { name: 'كفر الشيخ', price: 120, region: 'delta_north' },
-    { name: 'الدقهلية', price: 120, region: 'delta_north' },
-    { name: 'الشرقية', price: 120, region: 'delta_north' },
-    { name: 'الغربية', price: 120, region: 'delta_north' },
-    { name: 'المنوفية', price: 120, region: 'delta_north' },
-    { name: 'دمياط', price: 120, region: 'delta_north' },
-    { name: 'بورسعيد', price: 120, region: 'delta_north' },
-    { name: 'الإسماعيلية', price: 120, region: 'delta_north' },
-    { name: 'شمال سيناء', price: 120, region: 'delta_north' },
-    { name: 'جنوب سيناء', price: 120, region: 'delta_north' },
-    { name: 'مرسى مطروح', price: 120, region: 'delta_north' },
-    
-    // وجه قبلي (الصعيد) - 140 جنيه
-    { name: 'بني سويف', price: 140, region: 'upper_egypt' },
-    { name: 'الفيوم', price: 140, region: 'upper_egypt' },
-    { name: 'المنيا', price: 140, region: 'upper_egypt' },
-    { name: 'أسيوط', price: 140, region: 'upper_egypt' },
-    { name: 'سوهاج', price: 140, region: 'upper_egypt' },
-    { name: 'قنا', price: 140, region: 'upper_egypt' },
-    { name: 'الأقصر', price: 140, region: 'upper_egypt' },
-    { name: 'أسوان', price: 140, region: 'upper_egypt' },
-    { name: 'البحر الأحمر', price: 140, region: 'upper_egypt' },
-    { name: 'الوادي الجديد', price: 140, region: 'upper_egypt' }
+    // وجه قبلي (الصعيد) - 120 جنيه
+    { name: 'بني سويف', price: 120, region: 'upper_egypt' },
+    { name: 'الفيوم', price: 120, region: 'upper_egypt' },
+    { name: 'المنيا', price: 120, region: 'upper_egypt' },
+    { name: 'أسيوط', price: 120, region: 'upper_egypt' },
+    { name: 'سوهاج', price: 120, region: 'upper_egypt' },
+    { name: 'قنا', price: 120, region: 'upper_egypt' },
+    { name: 'الأقصر', price: 120, region: 'upper_egypt' },
+    { name: 'أسوان', price: 120, region: 'upper_egypt' },
+    { name: 'البحر الأحمر', price: 120, region: 'upper_egypt' },
+    { name: 'الوادي الجديد', price: 120, region: 'upper_egypt' }
   ];
 
   const handleChange = (e) => {
@@ -56,13 +54,8 @@ const GovernorateSelector = ({ selectedGovernorate, onGovernorateChange, classNa
       >
         <option value="" disabled>اختر المحافظة...</option>
         
-        {/* السويس */}
-        <optgroup label="السويس - 50 جنيه">
-          <option value="السويس">السويس</option>
-        </optgroup>
-        
         {/* وجه بحري */}
-        <optgroup label="وجه بحري (دلتا + شمال) - 120 جنيه">
+        <optgroup label="وجه بحري (دلتا + شمال) - 70 جنيه">
           <option value="القاهرة">القاهرة</option>
           <option value="الجيزة">الجيزة</option>
           <option value="القليوبية">القليوبية</option>
@@ -76,13 +69,14 @@ const GovernorateSelector = ({ selectedGovernorate, onGovernorateChange, classNa
           <option value="دمياط">دمياط</option>
           <option value="بورسعيد">بورسعيد</option>
           <option value="الإسماعيلية">الإسماعيلية</option>
+          <option value="السويس">السويس</option>
           <option value="شمال سيناء">شمال سيناء</option>
           <option value="جنوب سيناء">جنوب سيناء</option>
           <option value="مرسى مطروح">مرسى مطروح</option>
         </optgroup>
         
         {/* وجه قبلي */}
-        <optgroup label="وجه قبلي (الصعيد) - 140 جنيه">
+        <optgroup label="وجه قبلي (الصعيد) - 120 جنيه">
           <option value="بني سويف">بني سويف</option>
           <option value="الفيوم">الفيوم</option>
           <option value="المنيا">المنيا</option>

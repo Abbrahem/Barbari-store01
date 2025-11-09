@@ -1,29 +1,41 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+  "functions": {
+    "api/[[...slug]].js": {
+      "maxDuration": 30
     }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      },
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
+  },
   "env": {
     "FIREBASE_PROJECT_ID": "shevoo-store",
-    "FIREBASE_STORAGE_BUCKET": "shevoo-store.appspot.com"
-  }
+    "REACT_APP_API_BASE": "https://barbari-store01-b3g8.vercel.app/api"
+  },
+  "build": {
+    "env": {
+      "REACT_APP_API_BASE": "https://barbari-store01-b3g8.vercel.app/api"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/[[...slug]]"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://barbari-store01-b3g8.vercel.app"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
 }

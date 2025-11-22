@@ -9,7 +9,9 @@ module.exports = {
         'cairo': ['Cairo', 'sans-serif'],
       },
       colors: {
-        'dark': '#1a1a1a',
+        'dark': '#0f0f0f',
+        'dark-secondary': '#1a1a1a',
+        'dark-card': '#262626',
         'light-gray': '#f5f5f5',
       }
     },

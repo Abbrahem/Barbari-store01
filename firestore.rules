@@ -20,6 +20,15 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // Promo codes: temporary open access for development
+    match /promoCodes/{promoId} {
+      // Allow anyone to read promo codes for validation
+      allow read: if true;
+      
+      // Allow anyone to create, update, and delete promo codes (temporary for development)
+      allow write: if true;
+    }
+
     // Default deny everything else
     match /{document=**} {
       allow read, write: if false;

@@ -42,14 +42,14 @@ const GovernorateSelector = ({ selectedGovernorate, onGovernorateChange, classNa
 
   return (
     <div className={`w-full ${className}`}>
-      <label htmlFor="governorate" className="block text-sm font-medium text-dark mb-2">
+      <label htmlFor="governorate" className="block text-sm font-medium text-white mb-2">
         اختر المحافظة
       </label>
       <select
         id="governorate"
         value={selectedGovernorate?.name || ''}
         onChange={handleChange}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-dark focus:border-transparent bg-white text-right"
+        className="w-full px-4 py-3 bg-dark-secondary border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent text-white text-right"
         required
       >
         <option value="" disabled>اختر المحافظة...</option>
@@ -91,8 +91,8 @@ const GovernorateSelector = ({ selectedGovernorate, onGovernorateChange, classNa
       </select>
       
       {selectedGovernorate && (
-        <div className="mt-2 text-sm text-gray-600">
-          رسوم التوصيل: <span className="font-semibold text-red-600">{selectedGovernorate.price} جنيه مصري</span>
+        <div className="mt-2 text-sm text-gray-300">
+          رسوم التوصيل: <span className="font-semibold text-white">{selectedGovernorate.price} جنيه مصري</span>
         </div>
       )}
     </div>
